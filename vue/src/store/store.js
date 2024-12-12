@@ -37,6 +37,9 @@ const store = createStore({
         product.OrderAmount = amount; // Update the OrderAmount for the product
       }
     },
+    CLEAR_CART(state) {
+        state.cart = [];
+      },
     // Search-related mutation
     setSearchQuery(state, query) {
       state.searchQuery = query;
@@ -50,6 +53,9 @@ const store = createStore({
     addToCart({ commit }, product) {
       commit("addToCart", product);
     },
+    clearCart({ commit }) {
+        commit("CLEAR_CART");
+      },
     deleteFromCart({ commit }, index) {
       commit("removeFromCart", index);
     },

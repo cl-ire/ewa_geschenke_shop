@@ -20,6 +20,7 @@
 // Import the second component
 import Product from "./Product.vue";
 import { mapGetters, mapActions } from "vuex";
+import { getProducts } from "@/utils/apiFunctions";
 
 export default {
 	components: {
@@ -28,79 +29,8 @@ export default {
 	data() {
 		return {
 			filterText: "",
-			// Sample JSON data
-			products: [
-				{
-					ProduktID: "1",
-					Produktcode: "PHP1",
-					Produkttitel: "Einführung in PHP 8.0 - Teil 1",
-					Autorname: "Max Mustermann",
-					Verlagsname: "Spring verlag ",
-					PreisNetto: "100.0000",
-					Mwstsatz: "7.0000",
-					PreisBrutto: "107.0000",
-					Lagerbestand: "100",
-					Kurzinhalt: "super Einführung in PHP 8.0 .. ",
-					Gewicht: "1500",
-					LinkGrafikdatei: "",
-				},
-				{
-					ProduktID: "3",
-					Produktcode: "PHP2",
-					Produkttitel: "Einführung in PHP 8.0 - Teil 2",
-					Autorname: "Max Mustermann",
-					Verlagsname: "Spring verlag ",
-					PreisNetto: "200.0000",
-					Mwstsatz: "7.0000",
-					PreisBrutto: "214.0000",
-					Lagerbestand: "50",
-					Kurzinhalt: "super Einführung in PHP 8.0 .. ",
-					Gewicht: "1500",
-					LinkGrafikdatei: "",
-				},
-				{
-					ProduktID: "3",
-					Produktcode: "PHP2",
-					Produkttitel: "Einf\u00fchrung in PHP 8.0 - Teil 2",
-					Autorname: "Max Mustermann",
-					Verlagsname: "Spring verlag ",
-					PreisNetto: "200.0000",
-					Mwstsatz: "7.0000",
-					PreisBrutto: "214.0000",
-					Lagerbestand: "50",
-					Kurzinhalt: "super Einf\u00fchrung in PHP 8.0 .. ",
-					Gewicht: "1500",
-					LinkGrafikdatei: "",
-				},
-				{
-					ProduktID: "4",
-					Produktcode: "PHP3",
-					Produkttitel: "Einf\u00fchrung in PHP 8.0 - Teil 3",
-					Autorname: "Max Mustermann",
-					Verlagsname: "Spring verlag ",
-					PreisNetto: "200.0000",
-					Mwstsatz: "7.0000",
-					PreisBrutto: "214.0000",
-					Lagerbestand: "50",
-					Kurzinhalt: "super Einf\u00fchrung in PHP 8.0 .. ",
-					Gewicht: "1500",
-					LinkGrafikdatei: "",
-				},
-				{
-					ProduktID: "5",
-					Produktcode: "JAVA1",
-					Produkttitel: "Einf\u00fchrung in JAVA ",
-					Autorname: "Max Mustermann",
-					Verlagsname: "DPUNKT Verlag ",
-					PreisNetto: "200.0000",
-					Mwstsatz: "7.0000",
-					PreisBrutto: "214.0000",
-					Lagerbestand: "50",
-					Kurzinhalt: "super Einf\u00fchrung in JAVA .. ",
-					Gewicht: "1500",
-					LinkGrafikdatei: "",
-				},
-			],
+			loading: true,
+			products: [],
 			displayProducts: [],
 		};
 	},
@@ -115,6 +45,17 @@ export default {
 		},
 	},
 	methods: {
+		async fetchProducts() {
+			try {
+				const products = await getProducts();
+				this.products = products;
+				this.displayProducts = this.products;
+			} catch (error) {
+				console.error("Error fetching products:", error);
+			} finally {
+				this.loading = false;
+			}
+		},
 		// Method to update display products based on search query
 		...mapActions(["updateSearchQuery"]),
 		updateDisplayProducts(query) {
@@ -124,8 +65,9 @@ export default {
 		},
 	},
 	mounted() {
-		// Initialize displayProducts with all products on mount
-		this.displayProducts = this.products;
+		this.fetchProducts();
+        // Initialize displayProducts with all products on mount
+		
 	},
 	beforeRouteEnter(to, from, next) {
 		next((vm) => {

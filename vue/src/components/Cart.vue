@@ -23,6 +23,7 @@
 <script>
 // Import the CartItem component
 import CartItem from "./CartItem.vue";
+import { updateProductLagerbestand } from "@/utils/apiFunctions";
 
 export default {
 	components: {
@@ -43,8 +44,20 @@ export default {
 		},
 	},
 	methods: {
-		// Placeholder method for checkout (you can implement the checkout logic here)
-		checkout() {
+		async updateLagerbestand() {
+			for (const item of this.cart) {
+				try {
+					const newLagerbestand = item.Lagerbestand - item.OrderAmount;
+					const result = await updateProductLagerbestand(item.ProduktID, newLagerbestand);
+					console.log(`Lagerbestand updated for ${item.Produkttitel}:`, result);
+				} catch (error) {
+					console.error(`Error updating Lagerbestand for ${item.Produkttitel}:`, error);
+				}
+			}
+		},
+		async checkout() {
+			await this.updateLagerbestand();
+			this.$store.dispatch('clearCart');
 			alert("Proceeding to checkout!");
 		},
 	},
