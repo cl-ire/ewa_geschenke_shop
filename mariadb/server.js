@@ -19,7 +19,7 @@ const pool = mysql.createPool({
 	database: process.env.DB_NAME || "your_database_name", // Replace with your actual DB name
 });
 
-const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Middleware to authenticate JWT token
 const authenticateJWT = (req, res, next) => {
@@ -55,9 +55,9 @@ const isAdmin = (req, res, next) => {
 app.post("/api/login", (req, res) => {
     const { username, password } = req.body;
   
-    // Find user by username
     pool.query("SELECT * FROM users WHERE username = ?", [username], (err, rows) => {
       if (err) {
+        console.error("Database error:", err);  // This will log the error to the console
         return res.status(500).json({ error: err.message });
       }
   
@@ -67,31 +67,56 @@ app.post("/api/login", (req, res) => {
   
       const user = rows[0];
   
-      // Compare password with hashed password stored in DB
       bcrypt.compare(password, user.Passwort, (err, isMatch) => {
         if (err) {
+          console.error("Bcrypt error:", err);  // This will log the error from bcrypt
           return res.status(500).json({ error: err.message });
         }
   
         if (!isMatch) {
+          console.log("Password does not match.");
           return res.status(401).json({ error: "Invalid credentials" });
         }
   
-        // Generate JWT token
         const token = jwt.sign(
-          { userId: user.UserID, username: user.username },
-          process.env.JWT_SECRET || "your_secret_key",
-          { expiresIn: "1h" } // Set token expiry time
-        );
-  
+            { userId: user.id, username: user.username },
+            process.env.JWT_SECRET || "your_secret_key",
+            { expiresIn: "1h" }
+          );
+
+        console.log("JWT token generated for user:", user.username);
+
         res.json({ token });
       });
     });
+});
+  
+app.get("/api/user", authenticateJWT, (req, res) => {
+    const userId = req.user.userId; // Get the userId from the JWT payload
+  
+    // Log the userId for debugging
+    console.log("User ID from token:", userId);
+  
+    pool.query("SELECT * FROM users WHERE id = ?", [userId], (err, rows) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ error: err.message });
+      }
+  
+      if (rows.length === 0) {
+        console.error("User not found for ID:", userId);
+        return res.status(404).json({ error: "User not found" });
+      }
+  
+      const user = rows[0]; // The user data
+      res.json(user);  // Return the user data as a response
+    });
   });
+  
   
 
 // Example query to get all users
-app.get("/api/users", (req, res) => {
+app.get("/api/users", authenticateJWT, isAdmin, (req, res) => {
 	pool.query("SELECT * FROM users", (err, rows) => {
 		if (err) {
 			return res.status(500).json({ error: err.message });
@@ -110,7 +135,7 @@ app.post("/api/users", (req, res) => {
         return res.status(500).json({ error: err.message });
       }
   
-      const query = `INSERT INTO users (username, Vorname, Nachname, Email, Straße, Ort, PLZ, Nr., Passwort, Adminstatus) 
+      const query = `INSERT INTO users (username, Vorname, Nachname, Email, Straße, Ort, PLZ, Nr, Passwort, Adminstatus) 
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   
       pool.query(
@@ -152,6 +177,36 @@ app.put("/api/products/:id", (req, res) => {
 		res.json({ message: "Lagerbestand updated successfully" });
 	});
 });
+
+
+app.post('/api/create-checkout-session', async (req, res) => {
+    const { cartItems } = req.body;
+  
+    try {
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: cartItems.map((item) => ({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: item.name,
+            },
+            unit_amount: item.price * 100, // Stripe expects the amount in cents
+          },
+          quantity: item.quantity,
+        })),
+        mode: 'payment',
+        success_url: `${process.env.CLIENT_URL}/success`,
+        cancel_url: `${process.env.CLIENT_URL}/cancel`,
+      });
+  
+      res.json({ id: session.id });
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      res.status(500).json({ error: 'Failed to create checkout session' });
+    }
+  });
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;

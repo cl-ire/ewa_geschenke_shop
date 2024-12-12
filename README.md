@@ -12,3 +12,5 @@ sudo systemctl start mariadb
 chmod +x init_tables.sh
 
 
+node hashPassword.js "myPlaintextPassword"
+

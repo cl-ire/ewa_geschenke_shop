@@ -24,6 +24,7 @@
 // Import the CartItem component
 import CartItem from "./CartItem.vue";
 import { updateProductLagerbestand } from "@/utils/apiFunctions";
+import { loadStripe } from "@stripe/stripe-js";
 
 export default {
 	components: {
@@ -56,8 +57,37 @@ export default {
 			}
 		},
 		async checkout() {
+			// Load Stripe with the publishable key from .env
+			const stripe = await loadStripe("pk_test_51QVIOXLEVuUKXSXtH11vptwpcE7AlesWL65RkqkMxdI7RaAYUEuA1uvpdovFHzlLNaRiKqDuoBZirWhXxe9xwGWx00q1WTYAr8"); // Access Stripe key from .env
+
+			// Send cart data to the backend to create checkout session
+			try {
+				const response = await this.$http.post("/api/create-checkout-session", {
+					cartItems: this.cart.map((item) => ({
+						name: item.Produkttitel,
+						price: parseFloat(item.PreisNetto), // Pass the item price
+						quantity: item.OrderAmount, // Pass quantity
+					})),
+				});
+
+				const sessionId = response.data.id;
+
+				// Redirect the user to Stripe Checkout page
+				const { error } = await stripe.redirectToCheckout({
+					sessionId,
+				});
+
+				if (error) {
+					console.error("Stripe Checkout error:", error);
+					alert("Error with the payment. Please try again.");
+				}
+			} catch (error) {
+				console.error("Error creating checkout session:", error);
+				alert("There was an issue with checkout. Please try again.");
+			}
+
 			await this.updateLagerbestand();
-			this.$store.dispatch('clearCart');
+			this.$store.dispatch("clearCart");
 			alert("Proceeding to checkout!");
 		},
 	},

@@ -32,6 +32,6 @@ CREATE INDEX idx_email ON users(Email);
 
 INSERT INTO users (username, Vorname, Nachname, Email, Straße, Ort, PLZ, Nr, Passwort, Adminstatus)
 VALUES
-('admin', 'Administrator', 'Admin', 'admin@example.com', 'Admin St', 'Admin City', '12345', '1', 'adm24', TRUE);
+('admin', 'Administrator', 'Admin', 'admin@example.com', 'Admin St', 'Admin City', '12345', '1', '$2b$10$QT1oE.xEmuTjFH/KYsvDQumVNpZcOsOvQOTfdWEriV2shFA3hrW16', TRUE);
 
 SELECT * FROM users;
