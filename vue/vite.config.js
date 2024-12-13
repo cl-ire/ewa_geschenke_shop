@@ -12,6 +12,7 @@ export default defineConfig({
     vueJsx(),
     vueDevTools(),
   ],
+  envPrefix: 'VUE_',
   server: {
     proxy: {
       '/api': {

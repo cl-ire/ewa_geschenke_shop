@@ -1,9 +1,6 @@
-FROM node:22
+FROM node:22 as build-stage
 
-# install simple http server for serving static content
-RUN npm install -g http-server
-
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
 # Copy package.json and package-lock.json
@@ -18,6 +15,17 @@ COPY . .
 # Build the Vue.js app for production
 RUN npm run build
 
+# Production Stage
+FROM nginx:stable-alpine as production-stage
 
-EXPOSE 8080
-CMD [ "http-server", "dist" ]
+# Copy the built Vue app from the build-stage to NGINX's HTML folder
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# Copy custom nginx.conf to configure NGINX
+COPY ./nginx.conf /etc/nginx/nginx.conf
+
+# Expose port 80 for the app
+EXPOSE 80
+
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]

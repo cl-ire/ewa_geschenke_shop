@@ -9,7 +9,7 @@
 
 		<!-- Loop through the cart items and display each one using CartItem -->
 		<div v-for="(item, index) in cart" :key="index">
-			<CartItem :item="item" />
+			<CartItem :item="item" :index="index" />
 			<hr />
 		</div>
 
@@ -59,9 +59,13 @@ export default {
 			}
 		},
 		async checkout() {
+			
+			console.log("Proceeding to checkout...");
+			const stripePublishableKey = import.meta.env.VUE_APP_STRIPE_PUBLISHABLE_KEY;
+			console.log("Key: ", stripePublishableKey);
 			// Load Stripe with the publishable key from .env
-			const stripe = await loadStripe("pk_test_51QVIOXLEVuUKXSXtH11vptwpcE7AlesWL65RkqkMxdI7RaAYUEuA1uvpdovFHzlLNaRiKqDuoBZirWhXxe9xwGWx00q1WTYAr8"); // Access Stripe key from .env
-
+			const stripe = await loadStripe(stripePublishableKey); // Access Stripe key from .env
+			
 			// Send cart data to the backend to create checkout session
 			try {
 				const response = await this.$http.post("/api/create-checkout-session", {

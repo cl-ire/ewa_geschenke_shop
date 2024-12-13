@@ -25,6 +25,10 @@
         type: Object,
         required: true,
       },
+      index: {
+        type: Number,
+        required: true,
+      },
     },
     data() {
       return {
@@ -34,11 +38,11 @@
     methods: {
       // Method to remove the item from the cart
       removeFromCart() {
-        this.$store.commit('removeFromCart', this.item.index); // Passing item index or a unique identifier
+        this.$store.commit('removeFromCart', this.index); // Passing item index or a unique identifier
       },
       // Method to update the quantity of the item in the cart
       updateQuantity() {
-        this.$store.commit('updateOrderAmount', { index: this.item.index, amount: this.selectedQuantity });
+        this.$store.commit('updateOrderAmount', { index: this.index, amount: this.selectedQuantity });
       },
     },
   };

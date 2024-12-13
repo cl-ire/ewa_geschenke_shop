@@ -1,10 +1,8 @@
 FROM mariadb:latest
 
 # Copy initialization scripts
-COPY ./setup /docker-entrypoint-initdb.d/
+COPY ./setup /docker-entrypoint-initdb.d
 
-# Set the execute permission for the shell script
-RUN chmod +x /docker-entrypoint-initdb.d/init_tables.sh
 
 # Expose the database port
 EXPOSE 3306
