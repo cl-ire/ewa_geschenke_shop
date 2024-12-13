@@ -17,6 +17,8 @@
 			<h3>Total: {{ totalPrice }} EUR</h3>
 			<button @click="checkout">Proceed to Checkout</button>
 		</div>
+		<br />
+		<br />
 	</div>
 </template>
 

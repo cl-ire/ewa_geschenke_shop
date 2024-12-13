@@ -182,6 +182,8 @@ app.put("/api/products/:id", (req, res) => {
 app.post('/api/create-checkout-session', async (req, res) => {
     const { cartItems } = req.body;
   
+    console.log('Received cartItems:', cartItems);
+  
     try {
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -199,6 +201,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
         success_url: `${process.env.CLIENT_URL}/success`,
         cancel_url: `${process.env.CLIENT_URL}/cancel`,
       });
+  
+      console.log('Stripe session created:', session);
   
       res.json({ id: session.id });
     } catch (error) {
