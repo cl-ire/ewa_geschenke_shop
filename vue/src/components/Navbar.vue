@@ -11,7 +11,7 @@
 			<li><router-link to="/product-list">Product List</router-link></li>
 			<li><router-link to="/cart">Cart</router-link></li>
 			<li><router-link to="/login">Login</router-link></li>
-            <li v-if="userData"><router-link to="/admin">Admin</router-link></li>
+            <li v-if="userData"><router-link to="/admin">Stock</router-link></li>
 			<li v-if="userData"><router-link to="/order">Order</router-link></li>
 		</ul>
 	</nav>

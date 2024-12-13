@@ -47,7 +47,7 @@
           console.log("Order confirmation response:", data);
   
           // Redirect to product list
-          this.$router.push("/product-list");
+          
         } catch (error) {
           console.error("Error confirming order:", error);
           this.error = error.message;
@@ -58,6 +58,7 @@
     },
     mounted() {
       this.confirmOrder();
+      this.$router.push('/product-list');
     },
   };
   </script>
