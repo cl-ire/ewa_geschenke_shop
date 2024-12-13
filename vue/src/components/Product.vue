@@ -2,7 +2,7 @@
 	<div v-if="product" class="product-card">
 		<!-- Product Image (Placeholder if no image is available) -->
 		<div class="product-image">
-			<img :src="product.LinkGrafikdatei || 'https://via.placeholder.com/150'" alt="Product Image" />
+			<img :src="product.LinkGrafikdatei || `${clientUrl}/images/${product.Produktcode}.jpg`" alt="Product Image" />
 		</div>
 
 		<!-- Product Details -->
@@ -37,6 +37,11 @@ export default {
 			required: true,
 		},
 	},
+	data() {
+        return {
+            clientUrl: import.meta.env.VUE_CLIENT_URL,
+        };
+    },
 	methods: {
 		addToCart(product) {
 			this.$store.dispatch("addToCart", product);

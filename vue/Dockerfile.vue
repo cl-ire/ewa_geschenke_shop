@@ -21,6 +21,10 @@ FROM nginx:stable-alpine as production-stage
 # Copy the built Vue app from the build-stage to NGINX's HTML folder
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
+# Copy the images directory to NGINX's HTML folder
+COPY ./img /usr/share/nginx/html/images
+
+
 # Copy custom nginx.conf to configure NGINX
 COPY ./nginx.conf /etc/nginx/nginx.conf
 
