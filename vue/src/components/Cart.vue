@@ -25,8 +25,7 @@
 <script>
 // Import the CartItem component
 import CartItem from "./CartItem.vue";
-import { updateProductLagerbestand } from "@/utils/apiFunctions";
-import { loadStripe } from "@stripe/stripe-js";
+import { updateProductLagerbestand, handleCheckout } from "@/utils/apiFunctions";
 
 export default {
 	components: {
@@ -36,6 +35,9 @@ export default {
 		// Get the cart from Vuex store
 		cart() {
 			return this.$store.state.cart;
+		},
+		userData() {
+			return this.$store.state.userData;
 		},
 		// Calculate the total price of the cart
 		totalPrice() {
@@ -59,42 +61,32 @@ export default {
 			}
 		},
 		async checkout() {
-			
 			console.log("Proceeding to checkout...");
-			const stripePublishableKey = import.meta.env.VUE_APP_STRIPE_PUBLISHABLE_KEY;
-			console.log("Key: ", stripePublishableKey);
-			// Load Stripe with the publishable key from .env
-			const stripe = await loadStripe(stripePublishableKey); // Access Stripe key from .env
-			
-			// Send cart data to the backend to create checkout session
-			try {
-				const response = await this.$http.post("/api/create-checkout-session", {
-					cartItems: this.cart.map((item) => ({
-						name: item.Produkttitel,
-						price: parseFloat(item.PreisNetto), // Pass the item price
-						quantity: item.OrderAmount, // Pass quantity
-					})),
-				});
 
-				const sessionId = response.data.id;
+			const cartItems = this.cart.map((item) => ({
+				name: item.Produkttitel,
+				produktid: item.ProduktID, // Pass the item ID
+				price: item.PreisID, // Pass the item price
+				quantity: item.OrderAmount, // Pass quantity
+			}));
 
-				// Redirect the user to Stripe Checkout page
-				const { error } = await stripe.redirectToCheckout({
-					sessionId,
-				});
-
-				if (error) {
-					console.error("Stripe Checkout error:", error);
-					alert("Error with the payment. Please try again.");
-				}
-			} catch (error) {
-				console.error("Error creating checkout session:", error);
-				alert("There was an issue with checkout. Please try again.");
+			console.log("Cart Items:", cartItems);
+			// Check if the user is logged in
+			let userData = "";
+			if (this.userData === null) {
+				console.log("User is not logged in");
+			} else {				
+				userData = this.userData;
+				console.log("User Data:", userData);
 			}
 
-			await this.updateLagerbestand();
-			this.$store.dispatch("clearCart");
-			alert("Proceeding to checkout!");
+			const ret = await handleCheckout(cartItems, userData);
+
+			if ((ret === 0)) {
+				// Clear the cart only if the checkout was successful
+				await this.updateLagerbestand();
+				this.$store.dispatch("clearCart");
+			}
 		},
 	},
 };

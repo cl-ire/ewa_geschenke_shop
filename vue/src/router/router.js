@@ -7,6 +7,8 @@ import Cart from "../components/Cart.vue";
 import Admin from "../components/Admin.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
+import Success from "@/components/Success.vue";
+import Order from "@/components/Order.vue";
 
 const routes = [
   { path: "/", component: Home },
@@ -16,7 +18,9 @@ const routes = [
   { path: "/cart", component: Cart },
   { path: "/admin", component: Admin },
   { path: "/login", component: Login },
-  { path: "/register", component: Register }
+  { path: "/register", component: Register },
+  { path: "/success", component: Success },
+  { path: "/order", component: Order }
 ];
 
 const router = createRouter({

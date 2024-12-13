@@ -4,8 +4,8 @@
       <div class="cart-item-info">
         <h2 class="cart-item-title">{{ item.Produkttitel }}</h2>
         <p class="cart-item-price">
-          <strong>Price:</strong> € {{ item.PreisNetto }}
-          <span class="tax-label">(Excluding Tax)</span>
+          <strong>Price:</strong> € {{ (item.PreisNetto * (1 + item.Mwstsatz/100)).toFixed(2) }}
+          <span class="tax-label">(Including Tax)</span>
         </p>
         <p class="cart-item-quantity">
           <strong>Quantity: </strong>

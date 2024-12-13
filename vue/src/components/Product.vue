@@ -15,8 +15,8 @@
 
 			<!-- Price Without Taxes with Label -->
 			<p class="price">
-				<strong></strong> € {{ product.PreisNetto }}
-				<span class="tax-label">(Excluding Tax)</span>
+				<strong></strong> € {{ (product.PreisNetto * (1 + product.Mwstsatz/100)).toFixed(2) }}
+				<span class="tax-label">(Including Tax)</span>
 			</p>
 
 			<p class="stock"><strong>Stock:</strong> {{ product.Lagerbestand }} available</p>

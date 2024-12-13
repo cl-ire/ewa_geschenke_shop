@@ -6,6 +6,8 @@ const store = createStore({
     cart: [], // Cart will hold the list of items
     // Search query state
     searchQuery: '', // To hold the search query
+
+    userData: null,
   },
   mutations: {
     // Cart mutations
@@ -43,6 +45,9 @@ const store = createStore({
     // Search-related mutation
     setSearchQuery(state, query) {
       state.searchQuery = query;
+    },    
+    setUserData(state, payload) {
+      state.userData = payload;
     },
   },
   actions: {
@@ -66,12 +71,19 @@ const store = createStore({
     updateSearchQuery({ commit }, query) {
       commit("setSearchQuery", query);
     },
+    // User actions
+    updateUserData({ commit }, payload) {
+      commit("setUserData", payload);
+    },
   },
   getters: {
     // Cart getters
     cart: (state) => state.cart,
     // Search query getter
     searchQuery: (state) => state.searchQuery,
+
+    userData: (state) => state.userData,
+
   },
 });
 

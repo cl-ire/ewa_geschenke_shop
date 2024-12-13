@@ -78,14 +78,16 @@ export default {
     return {
       username: '',
       password: '',
-      userData: null, // Store user data after login
       error: null,
     };
   },
   computed: {
     adminStatus() {
       return this.userData && this.userData.Adminstatus ? 'Admin' : 'User';
-    }
+    },
+    userData() {
+      return this.$store.state.userData;
+    },
   },
   methods: {
     async login() {
@@ -127,9 +129,9 @@ export default {
         });
 
         // Store the user data in the component state
-        this.userData = response.data;
+        this.$store.commit('setUserData', response.data);
 
-        localStorage.setItem('userInfo', this.userData);
+        localStorage.setItem('userInfo', JSON.stringify(this.userData));
 
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -144,7 +146,7 @@ export default {
       localStorage.removeItem('userInfo');
       
       // Reset user data in the component
-      this.userData = null;
+      this.$store.commit('setUserData', null);
     }
   },
 };
