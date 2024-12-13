@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # Backend service
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.backend  # Adjust the path to your backend Dockerfile
+    ports:
+      - "${BACKEND_PORT}:5000"
+    environment:
+      DB_HOST: db  # Reference to the MariaDB container
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      PORT: "5000"
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      CLIENT_URL: ${VUE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - db  # Ensures the backend waits for the db service to start before it starts
+    env_file:
+      - .env  # Ensure the environment variables are loaded from the .env file
+
+  # Database service (MariaDB)
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql  # Persist database data across restarts
+    ports:
+      - "3306:3306"  # Expose MariaDB port to the host
+    env_file:
+      - .env  # Environment variables for MariaDB
+
+ # Vue.js frontend service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Path to the Dockerfile for your Vue.js app
+    ports:
+      - "${CLIENT_PORT}:8080"  # Expose the frontend on port 8080
+    depends_on:
+      - backend  # Ensure the frontend waits for the backend to be ready
+    environment:
+      CLIENT_URL: ${CLIENT_URL}
+      BACKEND_URL: ${BACKEND_URL}
+      VUE_APP_STRIPE_PUBLISHABLE_KEY: ${VUE_APP_STRIPE_PUBLISHABLE_KEY}
+    volumes:
+      - .:/app  # Mount th
+
+# Volumes for persisting data
+volumes:
+  db_data:

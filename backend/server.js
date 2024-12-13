@@ -151,14 +151,15 @@ app.post("/api/users", (req, res) => {
     });
   });
 
-app.get("/api/products", (req, res) => {
-	pool.query("SELECT * FROM products", (err, rows) => {
-		if (err) {
-			return res.status(500).json({ error: err.message });
-		}
-		res.json(rows);
-	});
-});
+  app.get("/api/products", (req, res) => {
+    pool.query("SELECT * FROM products", (err, rows) => {
+      if (err) {
+        console.error("Error fetching products:", err);
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(rows);
+    });
+  });
 
 // Update Lagerbestand in the products table
 app.put("/api/products/:id", (req, res) => {

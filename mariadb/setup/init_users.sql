@@ -1,0 +1,6 @@
+CREATE DATABASE IF NOT EXISTS product_db;
+
+CREATE USER IF NOT EXISTS 'dbapi'@'%' IDENTIFIED BY 'dbcredentials';
+GRANT ALL PRIVILEGES ON product_db.* TO 'dbapi'@'%';
+
+FLUSH PRIVILEGES;
