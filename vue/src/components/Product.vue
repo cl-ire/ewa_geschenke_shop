@@ -39,7 +39,7 @@ export default {
 	},
 	data() {
         return {
-            clientUrl: import.meta.env.VUE_CLIENT_URL,
+            clientUrl: `${window.location.protocol}//${window.location.host}`,
         };
     },
 	methods: {
