@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="order-list">
     <!-- Show the list of orders -->
     <div v-if="orders.length === 0">
       <p>No orders found.</p>
@@ -150,5 +150,9 @@ button:hover {
 hr {
   border-top: 1px solid #ddd;
   margin-top: 20px;
+}
+
+.order-list {
+  margin-left: 10px;
 }
 </style>

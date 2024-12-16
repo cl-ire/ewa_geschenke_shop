@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="login-form">
     <!-- Login form -->
     <form v-if="!userData" @submit.prevent="login">
       <div>
@@ -195,5 +195,9 @@ p {
 
 .form-group input {
   width: 200px;
+}
+
+.login-form {
+  margin-left: 10px;
 }
 </style>

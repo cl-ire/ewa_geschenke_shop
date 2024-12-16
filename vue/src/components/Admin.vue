@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="admin-panel">
       <!-- If not logged in, display the login link -->
       <div v-if="!isLoggedIn">
         <p>You must be logged in to access the Admin Panel. <a href="/login">Login here</a></p>
@@ -90,6 +90,10 @@
   
   a:hover {
     text-decoration: underline;
+  }
+
+  .admin-panel {
+    margin-left: 10px;
   }
   </style>
   

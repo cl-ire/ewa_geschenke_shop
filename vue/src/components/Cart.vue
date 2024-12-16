@@ -1,6 +1,6 @@
 <!-- CartComponent.vue -->
 <template>
-	<div>
+	<div class="cart">
 		<h2>Your Cart</h2>
 
 		<div v-if="cart.length === 0">
@@ -115,4 +115,9 @@ button {
 button:hover {
 	background-color: #45a049;
 }
+
+.cart {
+	margin-left: 10px;
+}
+
 </style>
